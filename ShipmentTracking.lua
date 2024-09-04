@@ -22,18 +22,24 @@ local ConstTypeFedex = "Fedex";
 local ConstTypeUps = "UPS";
 local ConstTypeUsps = "USPS";
 
-local ConstFedexAddress = "http://www.fedex.com/Tracking?cntry_code=us&tracknumbers=";
+local ConstFedexAddress = "https://www.fedex.com/wtrk/track/?trknbr=";
 local ConstUpsAddress = "http://wwwapps.ups.com/WebTracking/track?loc=en_US&track.x=Track&trackNums=";
 local ConstUspsAddress = "http://trkcnfrm1.smi.usps.com/PTSInternetWeb/InterLabelInquiry.do?trackGo.x=10&trackGo.y=7&strOrigTrackNum=";
 
 local ConstIlliadField = GetSetting("ILLiadField");
-local debugEnabled = false;
 
-require "Atlas.AtlasHelpers";
+luanet.load_assembly("log4net");
+
+local Types = {};
+Types["log4net.LogManager"] = luanet.import_type("log4net.LogManager");
+
+local log = Types["log4net.LogManager"].GetLogger("AtlasSystems.Addons.ShipmentTracking");
+
+require "AtlasHelpers";
 
 function Init()
 	if IsValidTransaction() then
-		Log("TrackShipping Init");
+		log:Debug("ShipmentTracking Init");
 		
 		interfaceMngr = GetInterfaceManager();
 		
@@ -41,7 +47,7 @@ function Init()
 		trackingForm.Form = interfaceMngr:CreateForm("Shipments", "Script");
 
 		-- Add a browser
-		trackingForm.Browser = trackingForm.Form:CreateBrowser("Shipments", "Shipments Browser", "Shipments");
+		trackingForm.Browser = trackingForm.Form:CreateBrowser("Shipments", "Shipments Browser", "Shipments", "WebView2");
 
 		-- Hide the text label
 		trackingForm.Browser.TextVisible = false;
@@ -66,10 +72,10 @@ function Init()
 end
 
 function Search()
-	Log("Search");
+	log:Debug("Search");
 	local trackingType = GetTrackingNumberType(GetFieldValue("Transaction", ConstIlliadField));
 	
-	Log("Tracking Type = " .. trackingType);
+	log:Debug("Tracking Type = " .. trackingType);
 	if trackingType == ConstTypeUps then
 		SearchUPS();
 	elseif trackingType == ConstTypeFedex then
@@ -104,14 +110,14 @@ function GetSearchableTrackingNumber()
 end
 
 function IsValidTransaction()
-	Log("IsValidTransaction()");
+	log:Debug("IsValidTransaction()");
 	
 	return (GetFieldValue("Transaction", "ProcessType") == "Lending" 
 					  and GetFieldValue("Transaction", "TransactionStatus") == "Item Shipped");
 end
 
 function GetTrackingNumberType(trackingNumString)
-	Log("Getting Tracking Number Type");
+	log:Debug("Getting Tracking Number Type");
 		
 	trackingNumString = trackingNumString:gsub(" ", "");
 	
@@ -159,7 +165,7 @@ function ShippingOptionMatches(optionString, keywordString, shippingType)
 	else
 		local keywords = AtlasHelpers.StringSplit(',', keywordString);
 		
-		for i = 1, table.getn(keywords) do
+		for i = 1, #keywords do
 			if (string.lower(keywords[i]) == optionString) then
 				return true;
 			end
@@ -190,9 +196,8 @@ function GetServiceFromNumberPrefix(trackingNumString)
 end
 
 function GetServiceFromNumber(trackingNumString)
-	if debugEnabled then
-		Log("Tracking Number Length = " .. string.len(trackingNumString));
-	end
+	log:Debug("Tracking Number Length = " .. string.len(trackingNumString));
+
 	local trackingType = nil;
 	
 	if string.len(trackingNumString) == 0 then
@@ -205,13 +210,7 @@ function GetServiceFromNumber(trackingNumString)
 		trackingType = ConstTypeUsps;
 	end
 	
-	Log("Returning " .. trackingType .. " from GetTrackingNumberType");
+	log:Debug("Returning " .. trackingType .. " from GetTrackingNumberType");
 	
 	return trackingType;
-end
-
-function Log(entry)
-	if debugEnabled then
-		LogDebug("----- " .. entry .. " -----");
-	end
 end

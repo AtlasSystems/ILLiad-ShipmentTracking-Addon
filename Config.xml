@@ -1,10 +1,10 @@
 <Configuration>
 	<Name>Shipment Tracking</Name>
 	<Author>Atlas Systems, Inc.</Author>
-	<Version>1.2</Version>
+	<Version>2.0.0</Version>
 	<Active>true</Active>
 
-	<Description>Displays tracking information based on a given tracking number</Description>
+	<Description>Displays tracking information based on a given tracking number.</Description>
 
 	<Forms>
 		<Form>FormRequest</Form>
@@ -28,6 +28,6 @@
 		</Setting>
 	</Settings>
 	<Files>
-		<File>TrackShipping.lua</File>
+		<File>ShipmentTracking.lua</File>
 	</Files>
 </Configuration>
