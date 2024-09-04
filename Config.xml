@@ -1,0 +1,33 @@
+<Configuration>
+	<Name>Shipment Tracking</Name>
+	<Author>Atlas Systems, Inc.</Author>
+	<Version>1.2</Version>
+	<Active>true</Active>
+
+	<Description>Displays tracking information based on a given tracking number</Description>
+
+	<Forms>
+		<Form>FormRequest</Form>
+	</Forms>	
+
+	<Settings>
+		<Setting name='AutoSearch' value='true' type='boolean'>
+			<Description>Defines whether the search should be automatically performed when the form opens.</Description>
+		</Setting>
+		<Setting name='ILLiadField' value='SpecIns' type='string'>
+			<Description>The ILLiad transaction field that contains the tracking number to search.</Description>
+		</Setting>
+		<Setting name='ShippingOptions_USPS' value='' type='string'>
+			<Description>A comma delimited list of shipping options for which the USPS tracking service should be used.  Any options containing the text "USPS" will already be matched and need not be listed. This list is not case sensitive.</Description>
+		</Setting>
+		<Setting name='ShippingOptions_Fedex' value='' type='string'>
+			<Description>A comma delimited list of shipping options for which the FedEx tracking service should be used.  Any options containing the text "Fedex" will already be matched and need not be listed. This list is not case sensitive.</Description>
+		</Setting>
+		<Setting name='ShippingOptions_UPS' value='' type='string'>
+			<Description>A comma delimited list of shipping options for which the UPS tracking service should be used.  Any options containing the text "UPS" will already be matched and need not be listed. This list is not case sensitive.</Description>
+		</Setting>
+	</Settings>
+	<Files>
+		<File>TrackShipping.lua</File>
+	</Files>
+</Configuration>
